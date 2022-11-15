@@ -1,7 +1,9 @@
 /** @format */
 
-const express = require("express");
+import express,{Response,NextFunction} from 'express'
+import {FacebookUser,Request} from './interfaces'
 
+const path = require("path");
 const app = express();
 
 const passport = require("passport");
@@ -11,7 +13,7 @@ const session = require("express-session");
 const User = require("./models/User");
 
 const facebookStrategy = require("passport-facebook").Strategy;
-
+app.set("views",path.join(__dirname, '/views'));
 app.set("view engine", "ejs");
 app.use(session({ secret: "ilovescotchscotchyscotchscotch" }));
 app.use(passport.initialize());
@@ -35,12 +37,12 @@ passport.use(
                 "emails",
             ],
         }, // facebook will send back the token and profile
-        function (_token, _refreshToken, profile, done) {
+        function (_token:any, _refreshToken:any, profile:any, done:any) {
             // asynchronous
             process.nextTick(function () {
                 // find the user in the database based on their facebook id
                 try {
-                    User.findOne({ email: profile.emails[0].value }, function (err, user) {
+                    User.findOne({ email: profile.emails[0].value }, function (err:any, user:any) {
                         // if there is an error, stop everything and return that
                         // ie an error connecting to the database
                         if (err) return done(err);
@@ -63,7 +65,7 @@ passport.use(
                             newUser.pic = profile.photos[0].value;
                             console.log(profile);
                             // save our user to the database
-                            newUser.save(function (err) {
+                            newUser.save(function (err:any) {
                                 if (err) throw err;
 
                                 // if successful, return the new user
@@ -79,31 +81,31 @@ passport.use(
     )
 );
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser(function (user:any, done:any) {
     done(null, user.id);
 });
 
 // used to deserialize the user
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
+passport.deserializeUser(function (id:any, done:any) {
+    User.findById(id, function (err:any, user:any) {
         done(err, user);
     });
 });
 
-app.get("/profile", isLoggedIn, function (req, res) {
+app.get("/profile", isLoggedIn, function (req:Request, res:Response) {
     console.log(req.user);
     res.render("profile", {
         user: req.user, // get the user out of session and pass to template
     });
 });
 
-app.get("/logout", function (req, res) {
+app.get("/logout", function (req:Request, res:Response) {
     req.logout();
     res.redirect("/");
 });
 
 // route middleware to make sure
-function isLoggedIn(req, res, next) {
+function isLoggedIn(req:Request, res:Response, next:any) {
     // if user is authenticated in the session, carry on
     if (req.isAuthenticated()) return next();
 
@@ -124,10 +126,10 @@ app.get(
     })
 );
 
-app.get("/", (_req, res) => {
+app.get("/", (_req:Request, res:Response) => {
     res.render("index");
 });
 
 app.listen(5000, () => {
-    console.log("App is listening on Port 5000");
+    console.log("App is listening on Port 50000");
 });

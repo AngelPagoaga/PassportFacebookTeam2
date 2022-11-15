@@ -1,7 +1,6 @@
 /** @format */
 
 const mongoose = require("mongoose");
-
 mongoose.connect(
 	"mongodb+srv://apagoaga02:QGexhD4HCvr0Q4bB@cluster0.qafw2pk.mongodb.net/sw202203",
 	{
